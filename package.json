@@ -59,6 +59,7 @@
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
     "@mui/icons-material": "^5.8.4",
+    "@mui/lab": "^5.0.0-alpha.89",
     "@mui/material": "^5.8.7",
     "@reduxjs/toolkit": "1.8.1",
     "@testing-library/dom": "^8.13.0",

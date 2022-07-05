@@ -1,17 +1,17 @@
-
-import SearchIcon from '@mui/icons-material/Search'
-import AccountCircleIcon from '@mui/icons-material/AccountCircle'
-import Button from '@mui/material/Button'
-import TextField from '@mui/material/TextField'
-import Container from '@mui/material/Container'
-import Grid from '@mui/material/Grid'
-import Typography from '@mui/material/Typography'
-import List from '@mui/material/List'
-import ListItem from '@mui/material/ListItem'
-import ListItemAvatar from '@mui/material/ListItemAvatar'
-import ListItemText from '@mui/material/ListItemText'
-import Avatar from '@mui/material/Avatar'
-import Divider from '@mui/material/Divider'
+import {
+  TextField,
+  Container,
+  Avatar,
+  Divider,
+  Grid,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Typography
+} from '@mui/material'
+import { LoadingButton } from '@mui/lab'
+import { Search } from '@mui/icons-material'
 
 export default () => (
   <>
@@ -22,26 +22,25 @@ export default () => (
         </Grid>
         <Grid item lg={9}>
           <Typography variant="h2" component="h2">
-            Repositórios do Github
+            Buscador do Github
           </Typography>
           <Typography variant="body1" component="p">
             Testando o comportamento da sua app com Jest e Testing Library
           </Typography>
         </Grid>
-
         <Grid item lg={10}>
-          <TextField id="standard-basic" label="Localize os repositórios dos usuários do github" variant="standard" fullWidth={true} />
+          <TextField id="standard-basic" label="Digite o nome do usuário" variant="standard" fullWidth={true} />
         </Grid>
         <Grid item lg={2}>
-          <Button color='primary' variant="contained"><SearchIcon /></Button>
+          <LoadingButton color='primary' variant="contained"><Search /></LoadingButton  >
         </Grid>
         <Grid item lg={12} />
-        <Grid item lg={12} style={{ backgroundColor: 'white', }}>
+        <Grid item lg={12}>
           <Typography variant="h4" component="h4">
             Repositórios encontrados:
           </Typography>
         </Grid>
-        <Grid item lg={12} style={{ backgroundColor: 'white' }}>
+        <Grid item lg={12}>
           <List>
             <ListItem alignItems="flex-start">
               <ListItemAvatar>
@@ -53,19 +52,16 @@ export default () => (
                   <Typography
                     component="span"
                     variant="body2"
-                    color="text.primary"
-                  >
+                    color="text.primary">
                     Este é a demonstração utilizada no Workshop Testando o comportamento da sua aplicação frontend com Mocha + Chai
                   </Typography>
                 }
               />
             </ListItem>
             <Divider variant="inset" component="li" />
-
           </List>
         </Grid>
       </Grid>
-
     </Container>
   </>
 )
