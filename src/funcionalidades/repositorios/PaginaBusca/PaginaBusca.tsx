@@ -1,59 +1,15 @@
 import {
   TextField,
   Container,
-  Avatar,
-  Divider,
   Grid,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
   Typography,
 } from '@mui/material'
 import { LoadingButton } from '@mui/lab'
 import { Search } from '@mui/icons-material'
 import { repositoriosAPI } from '../../../infraestrutura/apis/repositorios.api'
 import { useState } from 'react'
-
-const TituloLista = ({ lista }) => (
-  lista.length > 0 && (
-    <Grid item lg={12}>
-      <Typography variant='h4' component='h4'>
-        Repositórios encontrados:
-      </Typography>
-    </Grid>
-  )
-)
-
-const ItemLista = ({ item }) => (
-  <>
-    <ListItem alignItems='flex-start'>
-      <ListItemAvatar>
-        <Avatar alt={item.owner.login} src={item.owner.avatar_url} />
-      </ListItemAvatar>
-      <ListItemText
-        primary={item.name}
-        secondary={(
-          <Typography
-            component='span'
-            variant='body2'
-            color='text.primary'
-          >
-            {item.description}
-          </Typography>
-        )}
-      />
-    </ListItem>
-    <Divider variant='inset' component='li' />
-  </>
-)
-const Lista = ({ lista }) => (
-  <List>
-    {lista && lista.map((item) => (
-      <ItemLista key={item.id} item={item} />
-    ))}
-  </List>
-)
+import TituloLista from './TituloLista'
+import Lista from './Lista'
 
 export default () => {
   const [lista, setLista] = useState([])
