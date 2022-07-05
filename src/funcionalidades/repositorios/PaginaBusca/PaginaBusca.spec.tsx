@@ -94,7 +94,7 @@ describe('PaginaBusca', () => {
     })
 
     it('Deve exibir usuário buscado no campo de busca', async () => {
-      expect(await screen.getByLabelText('digite o nome do usuário', { selector: 'input' })).toHaveValue('fabiodamasceno')
+      expect(await screen.findByLabelText('Digite o nome do usuário', { selector: 'input' })).toHaveValue('fabiodamasceno')
     })
 
     it('Deve carregar item da lista com nome do repositório', async () => {
