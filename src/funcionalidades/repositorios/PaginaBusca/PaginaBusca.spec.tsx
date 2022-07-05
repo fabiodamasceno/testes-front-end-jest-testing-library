@@ -1,7 +1,12 @@
 import '@testing-library/jest-dom'
 import axios from 'axios'
 import MockAdapter from 'axios-mock-adapter'
-import { fireEvent, render, screen } from '@testing-library/react'
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+} from '@testing-library/react'
 import PaginaBusca from './PaginaBusca'
 
 describe('PaginaBusca', () => {
@@ -49,37 +54,47 @@ describe('PaginaBusca', () => {
   describe('Quando usuário buscar repositório ', () => {
     beforeEach(async () => {
       const mock = new MockAdapter(axios)
-
-      mock.onGet('https://api.github.com/users/fabiodamasceno/repos').reply(200, [
-        {
-          id: 1,
-          name: 'agnoster-zsh-theme',
-          description: 'A ZSH theme designed to disclose information contextually, with a powerline aesthetic',
-          owner: {
-            login: 'fabiodamasceno',
-            avatar_url: 'https://avatars.githubusercontent.com/u/1590195?v=4"',
+      mock.onGet('https://api.github.com/users/fabiodamasceno/repos').reply(
+        200,
+        [
+          {
+            id: 1,
+            name: 'agnoster-zsh-theme',
+            description: 'A ZSH theme designed to disclose information contextually, with a powerline aesthetic',
+            owner: {
+              login: 'fabiodamasceno',
+              avatar_url: 'https://avatars.githubusercontent.com/u/1590195?v=4"',
+            },
           },
-        },
-        {
-          id: 2,
-          name: 'agnoster-zsh-theme',
-          description: 'descrição de teste',
-          owner: {
-            login: 'fabiodamasceno',
-            avatar_url: 'https://avatars.githubusercontent.com/u/1590195?v=4"',
+          {
+            id: 2,
+            name: 'agnoster-zsh-theme',
+            description: 'descrição de teste',
+            owner: {
+              login: 'fabiodamasceno',
+              avatar_url: 'https://avatars.githubusercontent.com/u/1590195?v=4"',
+            },
           },
-        },
-      ])
-
+        ],
+      )
 
       render(<PaginaBusca />)
+
       const campoUsuario = screen.getByLabelText('Digite o nome do usuário', { selector: 'input' })
-      fireEvent.change(campoUsuario, { target: { value: 'fabiodamasceno' } })
-      fireEvent.click(screen.getByText('Buscar'))
+      const campoBuscar = screen.getByText('Buscar')
+
+      await act(() => {
+        fireEvent.change(campoUsuario, { target: { value: 'fabiodamasceno' } })
+        fireEvent.click(campoBuscar)
+      })
     })
 
     it('Deve exibir título da lista', async () => {
       expect(await screen.findByText('Repositórios encontrados:', { selector: 'h4' })).toBeInTheDocument()
+    })
+
+    it('Deve exibir usuário buscado no campo de busca', async () => {
+      expect(await screen.getByLabelText('digite o nome do usuário', { selector: 'input' })).toHaveValue('fabiodamasceno')
     })
 
     it('Deve carregar item da lista com nome do repositório', async () => {
@@ -91,11 +106,11 @@ describe('PaginaBusca', () => {
     })
 
     it('Deve carregar item da lista com avatar do dono do repositório', async () => {
-      expect(await screen.findAllByLabelText('fabiodamasceno', { selector: 'span' })).toHaveAttribute('src', 'https://avatars.githubusercontent.com/u/1590195?v=4"')
+      expect(await (await screen.findAllByAltText('fabiodamasceno')).at(0)).toHaveAttribute('src', 'https://avatars.githubusercontent.com/u/1590195?v=4"')
     })
 
-    fit('Deve carregar 2 itens na lista', async () => {
-      expect(await screen.findByText('agnoster-zsh-theme', { selector: 'span' })).toBeInTheDocument()
+    it('Deve carregar 2 itens na lista', async () => {
+      expect(await screen.findAllByText('agnoster-zsh-theme', { selector: 'span' })).toHaveLength(2)
     })
   })
 })
