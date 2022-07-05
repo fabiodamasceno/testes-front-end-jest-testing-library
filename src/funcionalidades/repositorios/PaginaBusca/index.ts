@@ -1,3 +1,3 @@
-import PaginaApontamento from './PaginaBusca'
+import PaginaBusca from './PaginaBusca'
 
-export default PaginaApontamento
+export default PaginaBusca

@@ -1,181 +1,101 @@
-// import '@testing-library/jest-dom'
-// import { render, screen, within } from '@testing-library/react'
-// import PaginaApontamento from './PaginaBusca'
+import '@testing-library/jest-dom'
+import axios from 'axios'
+import MockAdapter from 'axios-mock-adapter'
+import { fireEvent, render, screen } from '@testing-library/react'
+import PaginaBusca from './PaginaBusca'
 
-// describe('PaginaBusca', () => {
-//   describe('Quando tela renderizar', () => {
-//     beforeEach(() => {
-//       render(<PaginaApontamento />)
-//     })
+describe('PaginaBusca', () => {
+  describe('Quando tela carregar', () => {
+    beforeEach(() => {
+      render(<PaginaBusca />)
+    })
 
-//     it('Deve exibir título da página com texto Apontamento de horas', async () => {
-//       expect(await screen.findByText('Apontamento de Horas', { selector: 'h1' })).toBeInTheDocument()
-//     })
+    describe('A imagem do cabeçalho', () => {
+      let imagemOctocat
+      beforeEach(() => {
+        imagemOctocat = screen.getByAltText('Octocat 2010')
+      })
 
-//     it('Deve exibir o botão de "Novo apontamento"', async () => {
-//       expect(await screen.findByText('Novo apontamento')).toBeInTheDocument()
-//     })
+      it('Deve ser exibida', () => {
+        expect(imagemOctocat).toBeInTheDocument()
+      })
 
-//     it('Deve exibir o botão de "Gráfico de Horas"', async () => {
-//       expect(await screen.findByText('Gráfico de Horas')).toBeInTheDocument()
-//     })
+      it('Deve possuir url do octocat vinda do github', () => {
+        expect(imagemOctocat).toHaveAttribute('src', 'https://octodex.github.com/images/codercat.jpg')
+      })
 
-//     describe('Formulário de pesquisa', () => {
-//       it('Deve exibir o campo de seletor de Cliente', async () => {
-//         expect(await screen.findByLabelText('Cliente', { selector: 'select' })).toBeInTheDocument()
-//       })
+      it('Deve possuir 200 de tamanho', () => {
+        expect(imagemOctocat).toHaveAttribute('width', '200')
+      })
+    })
 
-//       it('Deve exibir o campo de seletor de Projeto', async () => {
-//         expect(await screen.findByLabelText('Projeto', { selector: 'select' })).toBeInTheDocument()
-//       })
+    it('Deve exibir título da página com texto "Buscador do Github"', () => {
+      expect(screen.getByText('Buscador do Github', { selector: 'h2' })).toBeInTheDocument()
+    })
 
-//       it('Deve exibir o campo de seletor de Profissional', async () => {
-//         expect(await screen.findByLabelText('Profissionais', { selector: 'select' })).toBeInTheDocument()
-//       })
+    it('Deve exibir subtítulo da página com texto "Testando o comportamento da sua app com Jest e Testing Library"', () => {
+      expect(screen.getByText('Testando o comportamento da sua app com Jest e Testing Library', { selector: 'p' })).toBeInTheDocument()
+    })
 
-//       it('Deve exibir o campo de seletor de Periodo', async () => {
-//         expect(await screen.findByLabelText('Período', { selector: 'select' })).toBeInTheDocument()
-//       })
+    it('Deve exibir campo de busca com label "Digite o nome do usuário"', () => {
+      expect(screen.getByLabelText('Digite o nome do usuário', { selector: 'input' })).toBeInTheDocument()
+    })
 
-//       describe('Campo Itens Por Página', () => {
-//         let selectItensPorPágina: HTMLElement
+    it('Deve exibir botão com ícone de buscar', () => {
+      expect(screen.getByTestId('SearchIcon')).toBeInTheDocument()
+    })
+  })
 
-//         beforeEach(async () => {
-//           selectItensPorPágina = await screen.findByLabelText('Itens Por Página', { selector: 'select' })
-//         })
+  describe('Quando usuário buscar repositório ', () => {
+    beforeEach(async () => {
+      const mock = new MockAdapter(axios)
 
-//         it('Deve exibir o campo de seletor de Itens Por Página', async () => {
-//           expect(selectItensPorPágina).toBeInTheDocument()
-//         })
+      mock.onGet('https://api.github.com/users/fabiodamasceno/repos').reply(200, [
+        {
+          id: 1,
+          name: 'agnoster-zsh-theme',
+          description: 'A ZSH theme designed to disclose information contextually, with a powerline aesthetic',
+          owner: {
+            login: 'fabiodamasceno',
+            avatar_url: 'https://avatars.githubusercontent.com/u/1590195?v=4"',
+          },
+        },
+        {
+          id: 2,
+          name: 'agnoster-zsh-theme',
+          description: 'descrição de teste',
+          owner: {
+            login: 'fabiodamasceno',
+            avatar_url: 'https://avatars.githubusercontent.com/u/1590195?v=4"',
+          },
+        },
+      ])
 
-//         it('Deve existir a opção com o valor 10 no seletor de Itens Por Página', () => {
-//           expect(within(selectItensPorPágina).getByText(10)).toBeInTheDocument()
-//         })
 
-//         it('Deve existir a opção com o valor 20 no seletor de Itens Por Página', () => {
-//           expect(within(selectItensPorPágina).getByText(20)).toBeInTheDocument()
-//         })
+      render(<PaginaBusca />)
+      const campoUsuario = screen.getByLabelText('Digite o nome do usuário', { selector: 'input' })
+      fireEvent.change(campoUsuario, { target: { value: 'fabiodamasceno' } })
+      fireEvent.click(screen.getByText('Buscar'))
+    })
 
-//         it('Deve existir a opção com o valor 50 no seletor de Itens Por Página', () => {
-//           expect(within(selectItensPorPágina).getByText(50)).toBeInTheDocument()
-//         })
+    it('Deve exibir título da lista', async () => {
+      expect(await screen.findByText('Repositórios encontrados:', { selector: 'h4' })).toBeInTheDocument()
+    })
 
-//         it('Deve existir a opção com o valor 100 no seletor de Itens Por Página', () => {
-//           expect(within(selectItensPorPágina).getByText(100)).toBeInTheDocument()
-//         })
-//       })
+    it('Deve carregar item da lista com nome do repositório', async () => {
+      expect(await (await screen.findAllByText('agnoster-zsh-theme', { selector: 'span' })).at(0)).toBeInTheDocument()
+    })
 
-//       describe('Campo Ordenação', () => {
-//         it('Deve exibir o label de descriçao de Ordenação', async () => {
-//           expect(await screen.findByText('Ordenação', { selector: 'legend' })).toBeInTheDocument()
-//         })
+    it('Deve carregar item da lista com descrição do repositório', async () => {
+      expect(await screen.findByText('A ZSH theme designed to disclose information contextually, with a powerline aesthetic', { selector: 'span' })).toBeInTheDocument()
+    })
 
-//         it('Deve exibir a opção "Decrescente" no campo de radio de Ordenação', async () => {
-//           expect(await screen.findByLabelText('Decrescente', { selector: 'input' })).toBeInTheDocument()
-//         })
+    it('Deve carregar item da lista com avatar do dono do repositório', async () => {
+      expect(await screen.findAllByLabelText('fabiodamasceno', { selector: 'span' })).toHaveAttribute('src', 'https://avatars.githubusercontent.com/u/1590195?v=4"')
+    })
 
-//         it('Deve exibir a opção "Crescente" no campo de radio de Ordenação', async () => {
-//           expect(await screen.findByLabelText('Crescente', { selector: 'input' })).toBeInTheDocument()
-//         })
-//       })
-
-//       it('Deve exibir botão buscar', async () => {
-//         expect(await screen.findByText('Buscar', { selector: 'button' })).toBeInTheDocument()
-//       })
-//     })
-
-//     describe('Tabela', () => {
-//       it('Deve exibir título da tabela "Total de Horas Apontadas"', async () => {
-//         expect(await screen.findByText('Total de Horas Apontadas:', { selector: 'strong' })).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir campo "Data" na tabela', async () => {
-//         expect(await screen.findByText('Data', { selector: 'th' })).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir campo "Início" na tabela', async () => {
-//         expect(await screen.findByText('Início', { selector: 'th' })).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir campo "Fim" na tabela', async () => {
-//         expect(await screen.findByText('Fim', { selector: 'th' })).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir campo "Horas" na tabela', async () => {
-//         expect(await screen.findByText('Horas', { selector: 'th' })).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir campo "Atividade" na tabela', async () => {
-//         expect(await screen.findByText('Atividade', { selector: 'th' })).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir campo "Fase" na tabela', async () => {
-//         expect(await screen.findByText('Fase', { selector: 'th' })).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir campo "Projeto" na tabela', async () => {
-//         expect(await screen.findByText('Projeto', { selector: 'th' })).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir campo "Profissional" na tabela', async () => {
-//         expect(await screen.findByText('Profissional', { selector: 'th' })).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir campo "Descrição" na tabela', async () => {
-//         expect(await screen.findByText('Descrição', { selector: 'th' })).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir campo "Editar/Excluir" na tabela', async () => {
-//         expect(await screen.findByText('Editar/Excluir', { selector: 'th' })).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir valor "31/05/2022" no campo "Data"', async () => {
-//         expect(await screen.findByText('31/05/2022', { selector: 'td' })).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir valor "13:00" no campo "Início"', async () => {
-//         expect(await screen.findByText('13:00', { selector: 'td' })).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir valor "18:00" no campo "Fim"', async () => {
-//         expect(await screen.findByText('18:00', { selector: 'td' })).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir valor "05:00" no campo "Horas"', async () => {
-//         expect(await screen.findByText('05:00', { selector: 'td' })).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir valor "Desenvolvimento" no campo "Atividade"', async () => {
-//         expect(await screen.findByText('Desenvolvimento', { selector: 'td' })).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir valor "Fase teste" no campo "Fase"', async () => {
-//         expect(await screen.findByText('Fase teste', { selector: 'td' })).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir valor "Spine" no campo "Projeto"', async () => {
-//         expect(await screen.findByText('Spine', { selector: 'td' })).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir valor "Profissional Lambda3" no campo "Profissional"', async () => {
-//         expect(await screen.findByText('Profissional Lambda3', { selector: 'td' })).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir valor "Devs do futuro" no campo "Descrição"', async () => {
-//         expect(await screen.findByText('Devs do futuro', { selector: 'td' })).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir valor com ícone de detalhes no campo "Editar/Excluir"', async () => {
-//         expect(await screen.findByTitle('Detalhes')).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir valor com ícone de editar no campo "Editar/Excluir"', async () => {
-//         expect(await screen.findByTitle('Editar')).toBeInTheDocument()
-//       })
-
-//       it('Deve exibir valor com ícone de excluir no campo "Editar/Excluir"', async () => {
-//         expect(await screen.findByTitle('Excluir')).toBeInTheDocument()
-//       })
-//     })
-//   })
-// })
+    fit('Deve carregar 2 itens na lista', async () => {
+      expect(await screen.findByText('agnoster-zsh-theme', { selector: 'span' })).toBeInTheDocument()
+    })
+  })
+})
